@@ -6,7 +6,6 @@ from modules import embedding,positional_encoding, multihead_attention,feedforwa
 import os,codecs
 from tqdm import tqdm
 
-
 class Graph():
     def __init__(self,is_training=True):
         self.graph = tf.Graph()
@@ -66,8 +65,6 @@ class Graph():
                                                        causality = False
                                                        )
                         self.enc = feedforward(self.enc,num_units = [4 * hp.hidden_units,hp.hidden_units])
-
-
 
             with tf.variable_scope("decoder"):
                 # Embedding
@@ -144,9 +141,6 @@ class Graph():
 
                 tf.summary.scalar('mean_loss',self.mean_loss)
                 self.merged = tf.summary.merge_all()
-
-
-
 
 if __name__ == '__main__':
     de2idx,idx2de = load_de_vocab()

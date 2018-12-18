@@ -1,8 +1,6 @@
 import tensorflow as tf
 import numpy as np
 
-
-
 def embedding(inputs,
               vocab_size,
               num_units,
@@ -211,8 +209,6 @@ def multihead_attention(queries,keys,num_units=None,
 
     return outputs
 
-
-
 def normalize(inputs,
               epsilon=1e-8,
               scope="ln",
@@ -277,7 +273,6 @@ def feedforward(inputs,
 
     return outputs
 
-
 def label_smoothing(inputs, epsilon=0.1):
     '''Applies label smoothing. See https://arxiv.org/abs/1512.00567.
 
@@ -314,7 +309,6 @@ def label_smoothing(inputs, epsilon=0.1):
     '''
     K = inputs.get_shape().as_list()[-1]  # number of channels
     return ((1 - epsilon) * inputs) + (epsilon / K)
-
 
 def scaled_dotproduct_attention(queries,keys,num_units=None,
                         num_heads = 0,

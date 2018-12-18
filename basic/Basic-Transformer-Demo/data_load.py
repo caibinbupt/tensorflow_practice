@@ -20,8 +20,6 @@ def load_en_vocab():
     idx2word = {idx:word for idx,word in enumerate(vocab)}
     return word2idx,idx2word
 
-
-
 def create_data(source_sents,target_sents):
     de2idx,idx2de = load_de_vocab()
     en2idx,idx2en = load_en_vocab()
@@ -46,8 +44,6 @@ def create_data(source_sents,target_sents):
         Y[i] = np.lib.pad(y,[0,hp.maxlen-len(y)],'constant',constant_values=(0,0))
     return X,Y,Sources,Targets
 
-
-
 def load_train_data():
     def _refine(line):
         line = regex.sub("[^\s\p{Latin}']", "", line)
@@ -61,7 +57,6 @@ def load_train_data():
     X, Y, Sources, Targets = create_data(de_sents, en_sents)
     return X, Y
 
-
 def load_test_data():
     def _refine(line):
         line = regex.sub("<[^>]+>", "", line)
@@ -73,8 +68,6 @@ def load_test_data():
 
     X,Y,Sources,Targets = create_data(de_sents,en_sents)
     return X,Sources,Targets
-
-
 
 def get_batch_data():
     X,Y = load_train_data()
