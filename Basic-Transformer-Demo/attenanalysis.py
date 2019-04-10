@@ -60,8 +60,7 @@ def multihead_attention(queries, keys, num_units=None,
     # 这里其实就是进行一个mask操作，不给模型看到未来的信息。
     if causality:
       diag_vals = tf.ones_like(outputs[0, :, :])
-      # tril = tf.contrib.linalg.LinearOperatorTriL(diag_vals).to_dense()
-      tril = tf.linalg.LinearOperatorLowerTriangular(diag_vals).to_dense()  # fix by bincai
+      tril = tf.linalg.LinearOperatorLowerTriangular(diag_vals).to_dense()
       masks = tf.tile(tf.expand_dims(tril, 0), [tf.shape(outputs)[0], 1, 1])
 
       paddings = tf.ones_like(masks) * (-2 ** 32 + 1)
@@ -121,7 +120,6 @@ def normalize(inputs,
 
     return outputs
 
-
 EMBEDDING_DIM = 9
 EMBEDDING_SIZE = 20
 BATCHSIZE=2
@@ -130,46 +128,66 @@ emb=np.random.rand(EMBEDDING_SIZE, EMBEDDING_DIM)
 emb[0]=np.zeros(EMBEDDING_DIM)
 embedding=tf.cast(tf.convert_to_tensor(emb), dtype=tf.float32)
 
-keys1 = tf.convert_to_tensor([[1,3,1,0,0],[1,0,0,0,0]])
-keysi = tf.nn.embedding_lookup(embedding, keys1)
-queries1 = tf.convert_to_tensor([[3],[2]])
-queriesi = tf.nn.embedding_lookup(embedding, queries1)
 
-ys = tf.convert_to_tensor([3,2])
-yi = tf.nn.embedding_lookup(embedding, ys)
-yii = tf.expand_dims(yi, 1)
+queries1 = tf.convert_to_tensor([[3],[0]])
+queriesi = tf.nn.embedding_lookup(embedding, queries1)
+keys1 = tf.convert_to_tensor([[1,3,1,0,0],[1,3,1,0,0]])
+keysi = tf.nn.embedding_lookup(embedding, keys1)
+
+is_training=True
+#asingle=multihead_attention(queries=queriesi, keys=queriesi, num_units=EMBEDDING_DIM,
+#                            num_heads=3, dropout_rate=0.5, is_training=True, 
+#                            causality=True, scope="self_attention")
+                                                       
+avanilla=multihead_attention(queries=queriesi, keys=keysi, num_units=EMBEDDING_DIM,
+                          num_heads=3, dropout_rate=0.5, is_training=True, 
+                          causality=False, scope="vanilla_attention")
+
 
 with tf.Session() as sess:
   sess.run(tf.global_variables_initializer())
   sess.run(tf.local_variables_initializer())
-  rqueriesi, ryi, ryii=sess.run([queriesi, yi, yii])
+  rqueriesi, rkeysi, ravanilla=sess.run([queriesi, keysi, avanilla])
 
 print('====rqueriesi=====')
 print(rqueriesi.shape)
 print(rqueriesi)
-print('====ryi=====')
-print(ryi.shape)
-print('====ryii=====')
-print(ryii.shape)
-print(ryii)
+print('====rkeysi=====')
+print(rkeysi.shape)
+print(rkeysi)
+print('====ravanilla=====')
+print(ravanilla.shape)
+print(ravanilla)
 
 
-#is_training=True
-#aself=multihead_attention(queries=keysi, keys=keysi, num_units=EMBEDDING_DIM,
-#                          num_heads=3, dropout_rate=0.5, is_training=True, 
-#                          causality=True, scope="self_attention")
-#                                                       
-#avanilla=multihead_attention(queries=queriesi, keys=keysi, num_units=EMBEDDING_DIM,
-#                          num_heads=3, dropout_rate=0.5, is_training=True, 
-#                          causality=False, scope="vanilla_attention")
+
+#EMBEDDING_DIM = 9
+#EMBEDDING_SIZE = 20
+#BATCHSIZE=2
 #
+#emb=np.random.rand(EMBEDDING_SIZE, EMBEDDING_DIM)
+#emb[0]=np.zeros(EMBEDDING_DIM)
+#embedding=tf.cast(tf.convert_to_tensor(emb), dtype=tf.float32)
+#
+#keys1 = tf.convert_to_tensor([[1,3,1,0,0],[1,0,0,0,0]])
+#keysi = tf.nn.embedding_lookup(embedding, keys1)
+#queries1 = tf.convert_to_tensor([[3],[2]])
+#queriesi = tf.nn.embedding_lookup(embedding, queries1)
+#
+#ys = tf.convert_to_tensor([3,2])
+#yi = tf.nn.embedding_lookup(embedding, ys)
+#yii = tf.expand_dims(yi, 1)
 #
 #with tf.Session() as sess:
 #  sess.run(tf.global_variables_initializer())
 #  sess.run(tf.local_variables_initializer())
-#  raself, ravanilla=sess.run([aself, avanilla])
+#  rqueriesi, ryi, ryii=sess.run([queriesi, yi, yii])
 #
-#print('====raself=====')
-#print(raself.shape)
-#print('====ravanilla=====')
-#print(ravanilla.shape)
+#print('====rqueriesi=====')
+#print(rqueriesi.shape)
+#print(rqueriesi)
+#print('====ryi=====')
+#print(ryi.shape)
+#print('====ryii=====')
+#print(ryii.shape)
+#print(ryii)
