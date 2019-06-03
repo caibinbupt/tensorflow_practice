@@ -48,9 +48,18 @@ def eval():
                     ### Autoregressive inference
                     ### 在测试的时候是一个一个预测
                     preds = np.zeros((hp.batch_size, hp.maxlen), np.int32)
+                    print('preds')
+                    print(preds[:2])
                     for j in range(hp.maxlen):
+                        print('input'+'*'*(1+j))
+                        print(preds[:2])
+                        _dec = sess.run(g.dec, {g.x: x, g.y: preds})
+                        print('dec'+'*'*(1+j))
+                        print(_dec[:2])
                         _preds = sess.run(g.preds, {g.x: x, g.y: preds})
                         preds[:, j] = _preds[:, j]
+                        print('output'+'-'*(1+j))
+                        print(preds[:2])
 
                     ### Write to file
                     for source, target, pred in zip(sources, targets, preds):  # sentence-wise

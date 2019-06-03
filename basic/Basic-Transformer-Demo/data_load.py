@@ -70,12 +70,34 @@ def load_test_data():
     return X,Sources,Targets
 
 def get_batch_data():
-    X,Y = load_train_data()
+    X, Y = load_train_data()
 
     num_batch = len(X) // hp.batch_size
 
     print(X[:10])
     print(Y[:10])
+      
+#[[ 129 1622    6  358    7 6349    3    0    0    0]
+# [  59 2320 2736    7  249 1486    3    0    0    0]
+# [  59  265  572  276   10   22 5922    3    0    0]
+# [  34    7   16    1    3    0    0    0    0    0]
+# [  37   63  136    9  935  396    3    0    0    0]
+# [ 672   14  165    4 1550  746    3    0    0    0]
+# [ 209   40  624   11    3    0    0    0    0    0]
+# [  37   51    1    4   36    1    3    0    0    0]
+# [  37    7   20 4103   17 1286    3    0    0    0]
+# [ 159    7    8    1    3    0    0    0    0    0]]
+#[[1062    6    4  413   12  661  230    3    0    0]
+# [  47  749 3628   12   25  115  768    3    0    0]
+# [1062    6    4  463   20   10    4 1453    3    0]
+# [ 611    8    1    3    0    0    0    0    0    0]
+# [  96  511   59    5   25  687  244    3    0    0]
+# [  49   66   32  112  143  257   91    3    0    0]
+# [  11  241    9  131    6  327    3    0    0    0]
+# [  79  117    1    1    1  140   35    9    3    0]
+# [  79    8    1  726    3    0    0    0    0    0]
+# [ 611    4    1  648    1    3    0    0    0    0]]
+
     X = tf.convert_to_tensor(X,tf.int32)
     Y = tf.convert_to_tensor(Y,tf.int32)
 
@@ -89,3 +111,5 @@ def get_batch_data():
                                  allow_smaller_final_batch=False)
 
     return x,y,num_batch
+#    x, y <tf.Tensor 'shuffle_batch:0' shape=(32, 10) dtype=int32>
+#    num_batch 1703

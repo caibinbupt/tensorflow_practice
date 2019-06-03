@@ -2,12 +2,12 @@ from data_load import get_batch_data, load_de_vocab, load_en_vocab
 from hyperparams import Hyperparams as hp
 
 import tensorflow as tf
-from modules import embedding,positional_encoding, multihead_attention,feedforward,label_smoothing
+from modules import embedding,positional_encoding, multihead_attention, feedforward, label_smoothing
 import os,codecs
 from tqdm import tqdm
 
 class Graph():
-    def __init__(self,is_training=True):
+    def __init__(self, is_training=True):
         self.graph = tf.Graph()
 
         with self.graph.as_default():
@@ -53,18 +53,19 @@ class Graph():
                                              training = tf.convert_to_tensor(is_training))
 
                 ## Blocks
-                for i in range(hp.num_blocks):
+                for i in range(hp.num_blocks):  # 6
+                    ## 结果都是 shape=((batch_size 32, maxlen 10, hidden_units 512), dtype=float32) 
                     with tf.variable_scope("num_blocks_{}".format(i)):
                         ### MultiHead Attention
                         self.enc = multihead_attention(queries = self.enc,
                                                        keys = self.enc,
-                                                       num_units = hp.hidden_units,
-                                                       num_heads = hp.num_heads,
-                                                       dropout_rate = hp.dropout_rate,
-                                                       is_training = is_training,
+                                                       num_units = hp.hidden_units,    # 512
+                                                       num_heads = hp.num_heads,       # 8
+                                                       dropout_rate = hp.dropout_rate, # 0.1
+                                                       is_training = is_training,      #
                                                        causality = False
                                                        )
-                        self.enc = feedforward(self.enc,num_units = [4 * hp.hidden_units,hp.hidden_units])
+                        self.enc = feedforward(self.enc,num_units = [4 * hp.hidden_units, hp.hidden_units])
 
             with tf.variable_scope("decoder"):
                 # Embedding
@@ -99,6 +100,7 @@ class Graph():
                 ## Blocks
                 for i in range(hp.num_blocks):
                     with tf.variable_scope("num_blocks_{}".format(i)):
+                        ## 结果都是 shape=(32, 10, 512), dtype=float32) 
                         ## Multihead Attention ( self-attention)
                         self.dec = multihead_attention(queries=self.dec,
                                                        keys=self.dec,
@@ -108,7 +110,6 @@ class Graph():
                                                        is_training=is_training,
                                                        causality=True,
                                                        scope="self_attention")
-
                         ## Multihead Attention ( vanilla attention)
                         self.dec = multihead_attention(queries=self.dec,
                                                        keys=self.enc,
